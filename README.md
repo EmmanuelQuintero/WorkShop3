@@ -1,13 +1,14 @@
 # Workshop 3 World Happiness Prediction and Data Streaming
 
 # Overview
-Welcome, this project is a project that covers the prediction of world happiness through a selection of features and implementation of Apache Kafka to stream the data and subsequently consume, predict and load into PostgreSQL
 
+Welcome, this project is a project that covers the prediction of world happiness through a selection of features and implementation of Apache Kafka to stream the data and subsequently consume, predict and load into PostgreSQL
 
 Made by Emmanuel Quintero
 
-# Ex:
-![image]()
+# WorkShop WorkFlow
+
+![image](https://github.com/EmmanuelQuintero/WorkShop3/assets/111546312/57d1b8ec-205f-4cce-8745-cb6873089235)
 
 # Tools used
 
@@ -18,41 +19,46 @@ Made by Emmanuel Quintero
 - **Pandas**
 - **Matplotlib**
 - **Docker Desktop**
-- **Power BI**
-- **Seaborn**
-- **Apache Airflow**
+- **Ploty**
+- **Apache Kafka**
+- **Scikit Learn**
 
 # About the data
-The data sets used come from Kaggle, you can find them here:
-- [Spotify Dataset](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset)
-- [The Grammy Awards](https://www.kaggle.com/datasets/unanimad/grammy-awards) 
+
+The datasets used are from world happiness during 2015 to 2019, some with different columns and others with similar columns
+
+- Dataset 2015.csv
+- Dataset 2016.csv
+- Dataset 2017.csv
+- Dataset 2018.csv
+- Dataset 2019.csv
 
 # Project Features
 
-- Docker Implementation: The project is located in a Docker container, thus facilitating its operation
+- Docker Implementation: The Kafka part is located in a Docker container, thus facilitating its operation
 
-- Exploratory data analysis (EDA): In notebooks 001_EDA and 002_EDA, respectively, there are the EDA carried out on each data set, there are also the transformations that will be applied later.
+- Exploratory data analysis (EDA): In notebooks 001_EDA , there are the EDA carried out on each data set, there are also the transformations that will be applied later.
 
-- Creation of Dag: A dag like the one seen above is created to automate tasks such as extracting data from the csv and the database, transforming the csv and the database with the transformations proposed in the EDA Notebooks, additionally joining both sets after the transformations, create and upload the data to a new table in postgres and finally upload the resulting dataset to Google Drive through PyDrive2 (API)
+- Features Selection: Inside the Kafka folder there is a file called features_selection, inside this file the functions are made by renaming and selecting only the characteristics chosen to carry out the analysis and prediction of world happiness, which are subsequently integrated into the producer.
 
-- Dag implementation: Once the functions and tasks of the dag have been created and connected, localhost:8080 is accessed to be able to run the dag (a step by step will be done later)
+- Kafka: For Kafka, Docker is run and once it is turned on, the topic to which the messages will be sent is created and the consumer and producer are run from the terminal.
 
-- Visualizations: Finally, you access PostgreSQL from Power BI, which is where the new table with the data is located after the transformations and the merge to perform the visualizations.
+- Prediction and Data loading in PostgreSQL: Once all the data has reached the consumer, he is responsible for applying the predictive model and saving the data in the database.
+
+- Model Metrics: Finally, the model metrics are evaluated from Jupyter notebook #2 with metrics such as the R^2 score, the mean square error and some graphs.
 
 # Requirements
 
-- Install Python 3.9
+- Install Python 3.11
 - Install PostgreSQL 15
-- Install PowerBI
 - Install Docker Desktop
+- Install kafka-python
 
 # Database Configuration
 
-In order to create the tables in postgres, I recommend creating a config folder with two files in json format
+In order to create the tables in postgres, I recommend creating a config folder with a file in json format
 
-One to connect to Postgres without having docker running and another to connect when docker is running since when docker is running the parameters will not be the same. However, both will have the same structure.
-
-This is conection.json
+This is keys.json
 
 ```json
 {
@@ -64,125 +70,110 @@ This is conection.json
 }
 ```
 
-And this conection_air.json
-```json
-{
-    "host": "host.docker.internal",
-    "port": "your_postgres_port",
-    "database": "database_name",
-    "user": "your_postgres_user",
-    "password": "your_postgres_password"
-}
-```
-
-### Note: The creation of the folder and files is done once the project is cloned, as we will do below:
+### Note: The creation of the folder and file is done once the project is cloned, as we will do below
 
 # To Run this project
 
 1. Clone the project:
+
 ```bash
-  git clone https://github.com/emmanuelqp/WorkShop2.git
+  git clone https://github.com/emmanuelqp/WorkShop3.git
 ```
+
 2. Go to the project directory
+
 ```bash
-cd WorkShop2
+cd WorkShop3
 ```
+
 ### Note: Once you are at the root of the project you can create the config folder with the mentioned files
+
 3. Create virtual environment for Python:
+
 ```bash
 python -m venv venv
 ```
+
 4. Activate virtual environment:
+
 ```bash
-.\venv\Scripts\activate
+.\.venv\Scripts\activate
 ```
+
 5. Install libraries:
+
 ```bash
 pip install requirements.txt
 ```
-6. Create a database in PostgreSQL
 
-7. The project has 3 Jupyter notebooks, the first 2 are where the respective EDa is done to the data sets and the 3 is where what transformations can be done to the merge are tested. In the dags folder, specifically in the etl.py file, you will find the functions that each task contains, in the etl_dag.py file there will be the connections for each task. Additionally, you will find a transformations folder which is where all the transformations that will be applied to each dataset are defined. The project has a Data folder which is where the csv are hosted, a pydrive.py file that will be explained later, a requirements.txt and for the docker configuration a Dockerfile and the docker compose.yaml
-
-### Advice: Before starting with Airflow I recommend this video to be able to upload the file to Drive, since you will have to do this before starting airflow
-
-[PyDrive2 Guide](https://www.youtube.com/watch?v=ZI4XjwbpEwU)
-
-8. To Start Airflow:
-
-You open the terminal and verify that you are inside WorkShop2, once this is done you enter the following command:
+or
 
 ```bash
-docker-compose up airflow-init
-```
-### Note: So that you can run the command without problem you must have docker desktop open
-And once the message exited with code 0 appears, do this:
-```bash
-docker-compose up
+pip install -r requirements.txt
 ```
 
+Once the dependencies are installed, I recommend you start with the part of notebook 001 to understand the EDA and the transformations along with the selection of characteristics applied to the datasets.
 
-You wait for something like this to appear:
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/7962908a-0040-40b9-839c-a4427dc0c2c0)
-And as soon as you get it you can enter 'localhost:8080'
-
-Once you put localhost:8080 in your browser, put the username: airflow and the password: airflow and you will be able to enter
-
-If you get an error like this:
-![Imagen de WhatsApp 2024-04-21 a las 16 07 59_8b4c402b](https://github.com/emmanuelqp/WorkShop2/assets/111546312/d4e48bae-d406-4a6c-a091-b9e51bde9226)
-
-Then you will go to your Docker Desktop and look for these containers (it doesn't matter what order you do):
-
-- flower-1
-- airflow-worker-1
-- airflow-scheduler-1
-- airflow-webserver-1
-
-You will enter each of them and look for the Exec option, inside exec something like this will appear
+6. Run Docker
 
 ```bash
-(airflow)
+docker compose up
 ```
-Once there you write PyDrive2 and hit enter
-It would look like this:
+
+6.1 Topic Creation:
+Once docker is already running, open a console in vscode and enter the following command:
+
 ```bash
-(airflow) pip install PyDrive2
+docker exec -it kafka-workshop-3 bash                                               
 ```
 
-Once you have done this in each container, this should appear in airflow:
-![Imagen de WhatsApp 2024-04-21 a las 16 11 12_e7e6cc25](https://github.com/emmanuelqp/WorkShop2/assets/111546312/2559cfc1-8bbd-4072-b55e-c66709d4544b)
+Once inside the docker console, run the following command:
 
+```bash
+kafka-topics --bootstrap-server localhost:9092 --create --topic world_happiness_ws3                                             
+```
 
-And you activate the dag and you can now run it
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/36b1dc2f-4ec1-429a-ac6b-88726af98c2c)Like the example
+Now you can do the following command:
 
-Once it has run completely, you can log into your postgres and verify that the table has been created. In my case the table is called MusicAwards
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/9719cc40-d0ac-4037-81a5-eeee75b506d8)
+```bash
+exit                                           
+```
 
-You can also verify that the file has been uploaded to the drive folder that you configured for PyDrive2
+Once the topic has been created, you can open two parallel consoles to run the producer and the consumer
 
-For visualizations:
+6.2 Kafka Producer and Consumer:
 
-9. Go to Powerr BI
+Once both terminals are open, make sure you are within the project path. Once this is verified, do the following command in both terminals:
 
-You create a new report
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/b7d9c8a5-6984-438d-ace6-bc5cedadc792)
+```bash
+cd Kafka                                      
+```
 
+Then you can run the producer and the consumer in each one.
 
-You select get data (Obtener Datos)
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/311d8b79-5ad6-4f0f-8102-b66f355b6a95)
+```bash
+python kafka_producer.py                                   
+```
 
+And
 
-Search for Postgres and select Postgres Database
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/07a9ba20-0d65-4096-830a-8ee37c706721)
+```bash
+python kafka_consumer.py                                    
+```
 
-You put your server (here you can put localhost) since the table is saved in your local postgres and the name of your database
-![image](https://github.com/emmanuelqp/WorkShop2/assets/111546312/82cb3de7-244a-443b-b4f1-ecd7de2b5e0e)
+#### NOTE: I recommend that you allow a few seconds (15 or 20) to launch the consumer since the producer takes a little time to start sending the data due to the process it does before
 
+Once the consumer has finished, it will wait 15 seconds waiting for another message, if it does not arrive, it will continue with the process. That is, Prediction and loading in Postgres
 
-You look for the table that contains the merge and you can now make your visualizations
+7. Model Metrics
 
+Finally, you can go to notebook 002 where there will be the metrics of the model that was used to predict the data saved in the database and your database should look like this:
 
-Thank you for visiting my repository, if you have any questions, don't forget to contact me
+![imagen_2024-05-24_232409819](https://github.com/EmmanuelQuintero/WorkShop3/assets/111546312/833c2660-75c3-4d56-b090-ec9a3d673280)
+That is, with the columns chosen to predict and additionally the column to be predicted and the column already predicted
 
-You can see my dashboard here:[My DashBoard](https://app.powerbi.com/view?r=eyJrIjoiMTEwM2Q5M2UtMjZhNC00YTk0LWE2YmMtMDg1OGU2YTU5ODI2IiwidCI6IjY5M2NiZWEwLTRlZjktNDI1NC04OTc3LTc2ZTA1Y2I1ZjU1NiIsImMiOjR9)
+## Thanks
+
+If you have any problems, do not hesitate to contact me through GitHub
+
+Thanks for watching and visiting my repository! 😊⭐
